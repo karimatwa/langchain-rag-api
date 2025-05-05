@@ -1,0 +1,55 @@
+services:
+  rag-db-svc:
+    image: pgvector/pgvector:pg16
+    container_name: rag-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: ragdb
+    networks:
+      - rag-network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    command: |
+      postgres -c log_statement=all
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "psql postgresql://postgres_user:postgres_password@localhost/ragdb --command 'SELECT 1;' || exit 1",
+        ]
+      interval: 20s
+      retries: 3
+
+  rag-bot-svc:
+    build: ./src
+    container_name: rag-bot
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - rag-db-svc
+    networks:
+      - rag-network
+    volumes:
+      - ./src:/app
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:8080/health || exit 1",
+        ]
+      interval: 20s
+      retries: 3
+
+volumes:
+  pgdata:
+
+networks:
+  rag-network:
+    driver: bridge

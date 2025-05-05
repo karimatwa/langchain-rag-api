@@ -1,0 +1,18 @@
+Flask==3.1.0
+requests==2.32.3
+beautifulsoup4==4.13.4
+python-dotenv==1.1.0
+
+# LangChain core & extensions
+langchain==0.3.25
+langchain-community==0.3.23
+langchain-core==0.3.58
+langchain-openai==0.3.16
+langchain-text-splitters==0.3.8
+langchain-postgres==0.0.14
+
+# PostgreSQL drivers
+psycopg>=3.0.0
+psycopg-binary>=3.0.0
+
+unstructured==0.17.2
